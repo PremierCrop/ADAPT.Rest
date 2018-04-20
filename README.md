@@ -1,16 +1,9 @@
 # PremierCrop.ADAPT.Rest
 An example library for working with [ADAPT](https://github.com/ADAPT/ADAPT/) objects in a REST context.  
 
-*****
-This code represents a proof of concept using ADAPT objects in a RESTful API manner.  
-It is being provided to the community to request feedback.  
-The code in it's current form is not in any way affiliated with or supported by the ADAPT team, and is provided as is.
+**This code represents a proof of concept using ADAPT objects in a RESTful API manner.  It is being provided to the community to request feedback.  The code in it's current form is not in any way affiliated with, or supported by, the ADAPT team, and is provided as is.**
 
-
-Our intent with this proof of concept is to contribute this code to the ADAPT project in the future - 
-as such we have placed it under the EPL version 1.0 to be compatible with the ADAPT framework.  
-Learn more about ADAPT at adaptframework.org
-*****
+Our intent with this proof of concept is to contribute this code to the ADAPT project in the future - as such we have placed it under the EPL version 1.0 to be compatible with the ADAPT framework.  Learn more about ADAPT at adaptframework.org
 
 ## ADAPT Background
 The Id properties on ADAPT objects are internal reference Ids.  For example, the Field object has integer 
