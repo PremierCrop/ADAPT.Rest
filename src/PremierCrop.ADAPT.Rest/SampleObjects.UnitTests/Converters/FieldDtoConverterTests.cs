@@ -36,6 +36,7 @@ namespace SampleObjects.UnitTests.Converters
             
             var selfLink = field.Links.Single(l => l.Rel == Relationships.Self);
             Assert.Equal($"/Fields/{uniqueIdFactory.UniqueIdSource}/{fieldDto.Uid}", selfLink.Link);
+            Assert.Equal(selfLink.Id.ReferenceId, field.Object.Id.ReferenceId);
 
             var growerLink = field.Links.Single(l => l.Rel == typeof(Grower).ObjectRel());
             Assert.Equal($"/Growers/{uniqueIdFactory.UniqueIdSource}/{fieldDto.GrowerUid}", growerLink.Link);

@@ -35,11 +35,19 @@ namespace SampleObjects.Converters
             if (fieldDto == null)
                 return null;
 
+
+            var field = new Field()
+            {
+                Description = fieldDto.Name
+            };
+
+            var fieldCompoundId = field.Id;
+            var fieldUniqueId = _uniqueIdFactory.CreateGuid(fieldDto.Uid);
+            fieldCompoundId.UniqueIds.Add(fieldUniqueId);
+            
             var farmUniqueId = _uniqueIdFactory.CreateGuid(fieldDto.FarmUid);
             var farmCompoundId = farmUniqueId.ToCompoundIdentifier();
-
-            var fieldUniqueId = _uniqueIdFactory.CreateGuid(fieldDto.Uid);
-            var fieldCompoundId = fieldUniqueId.ToCompoundIdentifier();
+            field.FarmId = farmCompoundId.ReferenceId;
 
             var growerUniqueId = _uniqueIdFactory.CreateGuid(fieldDto.GrowerUid);
             var growerCompoundId = growerUniqueId.ToCompoundIdentifier();
@@ -77,12 +85,6 @@ namespace SampleObjects.Converters
                 Link = $"/Fields/{fieldUniqueId.Source}/{fieldUniqueId.Id}/FieldBoundaries"
             };
             
-            var field = new Field()
-            {
-                Description = fieldDto.Name,
-                FarmId = farmCompoundId.ReferenceId
-            };
-
             field.Id.UniqueIds.Add(fieldUniqueId);
 
             var fieldEnvelope = new ModelEnvelope<Field>(field);

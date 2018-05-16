@@ -35,8 +35,10 @@ namespace SampleObjects.Converters
                 Name = pmGrower.Name
             };
 
+            var growerCompoundId = grower.Id;
             var growerUniqueId = _uniqueIdFactory.CreateGuid(pmGrower.Uid);
-            var growerCompoundId = growerUniqueId.ToCompoundIdentifier();
+            growerCompoundId.UniqueIds.Add(growerUniqueId);
+
             var growerLink = new ReferenceLink
             {
                 Id = growerCompoundId,

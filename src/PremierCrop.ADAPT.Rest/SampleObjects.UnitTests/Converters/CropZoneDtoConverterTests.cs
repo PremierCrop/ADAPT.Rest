@@ -27,15 +27,16 @@ namespace SampleObjects.UnitTests.Converters
             var cropZoneDto = new CropZoneDto { Id = 123, FieldUid = Guid.NewGuid(), CropYear = DateTime.Now.Year, Name = $"{DateTime.Now.Year} Corn" };
 
             var converter = new CropZoneDtoConverter(uniqueIdFactory);
-            var field = converter.Convert(cropZoneDto);
+            var cropZone = converter.Convert(cropZoneDto);
 
-            Assert.Equal(cropZoneDto.Id.ToString(), field.Object.Id.UniqueIds.First().Id);
-            Assert.Equal(cropZoneDto.Name, field.Object.Description);
+            Assert.Equal(cropZoneDto.Id.ToString(), cropZone.Object.Id.UniqueIds.First().Id);
+            Assert.Equal(cropZoneDto.Name, cropZone.Object.Description);
 
-            var selfLink = field.Links.Single(l => l.Rel == Relationships.Self);
+            var selfLink = cropZone.Links.Single(l => l.Rel == Relationships.Self);
             Assert.Equal($"/CropZones/{uniqueIdFactory.UniqueIdSource}/{cropZoneDto.Id}", selfLink.Link);
+            Assert.Equal(selfLink.Id.ReferenceId, cropZone.Object.Id.ReferenceId);
 
-            var fieldsLink = field.Links.Single(l => l.Rel == typeof(Field).ObjectRel());
+            var fieldsLink = cropZone.Links.Single(l => l.Rel == typeof(Field).ObjectRel());
             Assert.Equal($"/Fields/{uniqueIdFactory.UniqueIdSource}/{cropZoneDto.FieldUid}", fieldsLink.Link);
 
         }

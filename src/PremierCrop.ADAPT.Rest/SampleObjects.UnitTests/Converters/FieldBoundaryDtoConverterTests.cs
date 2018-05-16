@@ -34,8 +34,14 @@ namespace SampleObjects.UnitTests.Converters
             Assert.Equal(new DateTime(DateTime.Now.Year, 1, 1), timeScope.TimeStamp1);
             Assert.Equal(new DateTime(DateTime.Now.Year, 12, 31), timeScope.TimeStamp2);
 
+
+            var selfLink = envelope.Links.Single(l => l.Rel == Relationships.Self);
+            Assert.Equal($"/FieldBoundaries/{uniqueIdFactory.UniqueIdSource}/{fieldBoundaryDto.Id}", selfLink.Link);
+            Assert.Equal(selfLink.Id.ReferenceId, envelope.Object.Id.ReferenceId);
+
             var fieldsLink = envelope.Links.Single(l => l.Rel == typeof(Field).ObjectRel());
             Assert.Equal($"/Fields/{uniqueIdFactory.UniqueIdSource}/{fieldBoundaryDto.FieldUid}", fieldsLink.Link);
+
 
         }
     }

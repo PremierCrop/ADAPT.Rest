@@ -32,16 +32,29 @@ namespace SampleObjects.Converters
 
         public ModelEnvelope<FieldBoundary> Convert(FieldBoundaryDto fieldBoundaryDto)
         {
+            var fieldBoundary = new FieldBoundary
+            {
+                TimeScopes = new List<TimeScope>()
+                {
+                    new TimeScope { TimeStamp1 = new DateTime(fieldBoundaryDto.CropYear, 1, 1), TimeStamp2 = new DateTime(fieldBoundaryDto.CropYear, 12, 31) }
+                },
+                Description = $"{fieldBoundaryDto.CropYear} Boundary"
+            };
+
+            var fieldBoundaryUniqueId = fieldBoundary.Id;
             var boundaryUniqueId = _uniqueIdFactory.CreateInt(fieldBoundaryDto.Id);
-            var fieldUniqueId = _uniqueIdFactory.CreateGuid(fieldBoundaryDto.FieldUid);
-            var fieldCompoundId = fieldUniqueId.ToCompoundIdentifier();
+            fieldBoundaryUniqueId.UniqueIds.Add(boundaryUniqueId);
 
             var selfLink = new ReferenceLink
             {
-                Id = fieldCompoundId,
+                Id = fieldBoundaryUniqueId,
                 Rel = Relationships.Self,
                 Link = $"/FieldBoundaries/{boundaryUniqueId.Source}/{boundaryUniqueId.Id}"
             };
+            
+            var fieldUniqueId = _uniqueIdFactory.CreateGuid(fieldBoundaryDto.FieldUid);
+            var fieldCompoundId = fieldUniqueId.ToCompoundIdentifier();
+            fieldBoundary.FieldId = fieldCompoundId.ReferenceId;
 
             var fieldLink = new ReferenceLink
             {
@@ -49,18 +62,7 @@ namespace SampleObjects.Converters
                 Rel = typeof(Field).ObjectRel(),
                 Link = $"/Fields/{fieldUniqueId.Source}/{fieldUniqueId.Id}"
             };
-
-
-            var fieldBoundary = new FieldBoundary
-            {
-                FieldId = fieldCompoundId.ReferenceId,
-                TimeScopes = new List<TimeScope>()
-                {
-                    new TimeScope { TimeStamp1 = new DateTime(fieldBoundaryDto.CropYear, 1, 1), TimeStamp2 = new DateTime(fieldBoundaryDto.CropYear, 12, 31) }
-                },
-                Description = $"{fieldBoundaryDto.CropYear} Boundary"
-            };
-            fieldBoundary.Id.UniqueIds.Add(boundaryUniqueId);
+            
 
             // NOTE:  Skipped SpatialData to not introduce Spatial Dependencies in conversion.
             

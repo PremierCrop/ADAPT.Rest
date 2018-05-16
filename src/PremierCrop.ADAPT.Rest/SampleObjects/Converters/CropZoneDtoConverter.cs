@@ -31,11 +31,18 @@ namespace SampleObjects.Converters
 
         public ModelEnvelope<CropZone> Convert(CropZoneDto cropZoneDto)
         {
-            var fieldUniqueId = _uniqueIdFactory.CreateGuid(cropZoneDto.FieldUid);
-            var fieldCompoundId = fieldUniqueId.ToCompoundIdentifier();
+            var cropZone = new CropZone()
+            {
+                Description = cropZoneDto.Name,
+                TimeScopes = new List<TimeScope>()
+                {
+                    new TimeScope { TimeStamp1 = new DateTime(cropZoneDto.CropYear, 1, 1), TimeStamp2 = new DateTime(cropZoneDto.CropYear, 12, 31) }
+                }
+            };
 
             var cropZoneUniqueId = _uniqueIdFactory.CreateInt(cropZoneDto.Id);
-            var cropZoneCompoundId = cropZoneUniqueId.ToCompoundIdentifier();
+            var cropZoneCompoundId = cropZone.Id;
+            cropZone.Id.UniqueIds.Add(cropZoneUniqueId);
 
             var selfLink = new ReferenceLink
             {
@@ -44,25 +51,19 @@ namespace SampleObjects.Converters
                 Link = $"/CropZones/{cropZoneUniqueId.Source}/{cropZoneUniqueId.Id}"
             };
 
+            var fieldUniqueId = _uniqueIdFactory.CreateGuid(cropZoneDto.FieldUid);
+            var fieldCompoundId = fieldUniqueId.ToCompoundIdentifier();
+
             var fieldLink = new ReferenceLink
             {
                 Id = fieldCompoundId,
                 Rel = typeof(Field).Name.ToLower(),
                 Link = $"/Fields/{fieldUniqueId.Source}/{fieldUniqueId.Id}"
             };
-            var cropZone = new CropZone()
-            {
-                Description = cropZoneDto.Name,
-                FieldId = fieldCompoundId.ReferenceId,
-                TimeScopes = new List<TimeScope>()
-                {
-                    new TimeScope { TimeStamp1 = new DateTime(cropZoneDto.CropYear, 1, 1), TimeStamp2 = new DateTime(cropZoneDto.CropYear, 12, 31) }
-                }
-            };
+            cropZone.FieldId = fieldCompoundId.ReferenceId;
 
             // NOTE:  Skipped BoundingRegion to not introduce Spatial Dependencies in conversion.
             
-            cropZone.Id.UniqueIds.Add(cropZoneUniqueId);
             var cropZoneEnvelope = new ModelEnvelope<CropZone>(cropZone);
             cropZoneEnvelope.Links.Add(selfLink);
             cropZoneEnvelope.Links.Add(fieldLink);

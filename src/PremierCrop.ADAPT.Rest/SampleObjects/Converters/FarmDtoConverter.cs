@@ -30,11 +30,15 @@ namespace SampleObjects.Converters
 
         public ModelEnvelope<Farm> Convert(FarmDto farmDto)
         {
-            var growerUniqueId = _uniqueIdFactory.CreateGuid(farmDto.GrowerUid);
-            var growerCompoundId = growerUniqueId.ToCompoundIdentifier();
+
+            var farm = new Farm()
+            {
+                Description = farmDto.Name
+            };
 
             var farmUniqueId = _uniqueIdFactory.CreateGuid(farmDto.Uid);
-            var farmCompoundId = farmUniqueId.ToCompoundIdentifier();
+            var farmCompoundId = farm.Id;
+            farmCompoundId.UniqueIds.Add(farmUniqueId);
 
             var selfLink = new ReferenceLink
             {
@@ -44,6 +48,10 @@ namespace SampleObjects.Converters
                 Type = "get"
             };
 
+            var growerUniqueId = _uniqueIdFactory.CreateGuid(farmDto.GrowerUid);
+            var growerCompoundId = growerUniqueId.ToCompoundIdentifier();
+
+            farm.GrowerId = growerCompoundId.ReferenceId;
             var growerLink = new ReferenceLink
             {
                 Id = growerCompoundId,
@@ -58,16 +66,6 @@ namespace SampleObjects.Converters
                 Link = $"/Farms/{farmUniqueId.Source}/{farmUniqueId.Id}/Fields",
                 Type = "get"
             };
-
-
-            var farm = new Farm()
-            {
-                Description = farmDto.Name,
-                GrowerId = growerCompoundId.ReferenceId
-            };
-
-
-            farm.Id.UniqueIds.Add(farmUniqueId);
 
             var farmEnvelope = new ModelEnvelope<Farm>(farm);
             farmEnvelope.Links.Add(growerLink);

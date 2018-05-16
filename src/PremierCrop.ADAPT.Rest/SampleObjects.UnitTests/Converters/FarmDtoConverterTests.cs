@@ -27,18 +27,19 @@ namespace SampleObjects.UnitTests.Converters
             var farmDto = new FarmDto { Uid = Guid.NewGuid(), GrowerUid = Guid.NewGuid(), Name = "Test" };
 
             var converter = new FarmDtoConverter(uniqueIdFactory);
-            var field = converter.Convert(farmDto);
+            var farm = converter.Convert(farmDto);
 
-            Assert.Equal(farmDto.Uid.ToString(), field.Object.Id.UniqueIds.First().Id);
-            Assert.Equal(farmDto.Name, field.Object.Description);
+            Assert.Equal(farmDto.Uid.ToString(), farm.Object.Id.UniqueIds.First().Id);
+            Assert.Equal(farmDto.Name, farm.Object.Description);
 
-            var selfLink = field.Links.Single(l => l.Rel == Relationships.Self);
+            var selfLink = farm.Links.Single(l => l.Rel == Relationships.Self);
             Assert.Equal($"/Farms/{uniqueIdFactory.UniqueIdSource}/{farmDto.Uid}", selfLink.Link);
+            Assert.Equal(selfLink.Id.ReferenceId, farm.Object.Id.ReferenceId);
 
-            var growerLink = field.Links.Single(l => l.Rel == typeof(Grower).ObjectRel());
+            var growerLink = farm.Links.Single(l => l.Rel == typeof(Grower).ObjectRel());
             Assert.Equal($"/Growers/{uniqueIdFactory.UniqueIdSource}/{farmDto.GrowerUid}", growerLink.Link);
             
-            var fieldsLink = field.Links.Single(l => l.Rel == typeof(Field).ListRel());
+            var fieldsLink = farm.Links.Single(l => l.Rel == typeof(Field).ListRel());
             Assert.Equal($"/Farms/{uniqueIdFactory.UniqueIdSource}/{farmDto.Uid}/Fields", fieldsLink.Link);
 
         }
